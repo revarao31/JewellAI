@@ -1,608 +1,990 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>JewellAI — Your Smart Jewellery Assistant</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.5/purify.min.js"></script>
-<style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JewellAI — Smart Jewellery Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
-  :root{
-    --ivory:#fbf8f3;
-    --surface:#ffffff;
-    --surface-2:#fffaf2;
-    --ink:#29231b;
-    --ink-soft:#756b5d;
-    --gold:#c39a5b;
-    --gold-deep:#8f6835;
-    --gold-light:#ead5ad;
-    --gold-mist:#f5ead7;
-    --line:#e9dfcf;
-    --ok:#4f8b62;
-    --danger:#b3543f;
-    --shadow:0 14px 45px rgba(83,63,34,.10);
-    box-sizing:border-box;
-  }
-  *{box-sizing:inherit;}
-  html,body{height:100%;margin:0;}
-  body{
-    background:
-      radial-gradient(circle at 15% 10%, rgba(234,213,173,.22), transparent 28%),
-      radial-gradient(circle at 90% 85%, rgba(195,154,91,.12), transparent 30%),
-      var(--ivory);
-    color:var(--ink);
-    font-family:'Manrope',system-ui,sans-serif;
-    -webkit-font-smoothing:antialiased;
-  }
-  #root{height:100%;}
-  .app{
-    display:flex;flex-direction:column;height:100%;
-    max-width:900px;margin:0 auto;background:rgba(251,248,243,.84);
-    position:relative;overflow:hidden;
-    box-shadow:0 0 70px rgba(71,53,27,.08);
-  }
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.10/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.5/purify.min.js"></script>
 
-  /* Header */
-  header.top{
-    position:sticky;top:0;z-index:10;
-    display:flex;align-items:center;justify-content:space-between;gap:12px;
-    padding:13px 18px;
-    background:rgba(255,252,247,.86);
-    backdrop-filter:blur(18px);
-    border-bottom:1px solid rgba(233,223,207,.9);
-  }
-  .brand{display:flex;align-items:center;gap:11px;min-width:0;}
-  .brand-mark{
-    width:43px;height:43px;border-radius:14px;
-    background:linear-gradient(145deg,#f6e8cb,#b98a4b);
-    display:flex;align-items:center;justify-content:center;flex:none;
-    box-shadow:0 8px 22px rgba(143,104,53,.20), inset 0 0 0 1px rgba(255,255,255,.55);
-    font-size:21px;
-  }
-  .brand-text h1{
-    font-family:'Fraunces',serif;font-weight:600;font-size:21px;
-    line-height:1;margin:0;letter-spacing:.15px;
-  }
-  .brand-text p{margin:4px 0 0;font-size:11.5px;color:var(--ink-soft);}
-  .header-actions{display:flex;align-items:center;gap:7px;}
-  .status{
-    display:flex;align-items:center;gap:6px;font-size:11.5px;
-    color:var(--ink-soft);padding:7px 10px;border:1px solid var(--line);
-    border-radius:999px;background:rgba(255,255,255,.7);
-  }
-  .status .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);animation:pulse 2.2s infinite;}
-  .status .dot.off{background:var(--danger);animation:none;}
-  @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(79,139,98,.25)}50%{opacity:.45;box-shadow:0 0 0 5px rgba(79,139,98,0)}}
-  .icon-btn{
-    border:1px solid var(--line);background:rgba(255,255,255,.85);
-    width:38px;height:38px;border-radius:12px;display:flex;align-items:center;
-    justify-content:center;cursor:pointer;color:var(--ink);
-    transition:all .18s ease;box-shadow:0 3px 12px rgba(60,45,25,.04);
-  }
-  .icon-btn:hover{border-color:var(--gold);transform:translateY(-1px);box-shadow:0 7px 18px rgba(60,45,25,.09);}
-  .icon-btn:active{transform:scale(.94);}
+  <style>
+    :root {
+      --bg: #faf7f1;
+      --paper: #fffdf9;
+      --gold: #b58a4b;
+      --gold-dark: #87622f;
+      --gold-pale: #f2e6d1;
+      --ink: #2d281f;
+      --muted: #82786a;
+      --line: #e9dfd0;
+      --green: #43845d;
+      --red: #b65343;
+      --shadow: 0 12px 35px rgba(69, 48, 20, .08);
+    }
 
-  /* Chat */
-  main.chat{
-    flex:1;overflow-y:auto;padding:25px 18px 12px;
-    display:flex;flex-direction:column;gap:17px;
-    scroll-behavior:smooth;
-  }
-  .welcome{margin:auto 0;text-align:center;padding:18px 8px 12px;animation:welcomeIn .5s ease;}
-  @keyframes welcomeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  .welcome .glyph{
-    width:72px;height:72px;margin:0 auto 14px;border-radius:24px;
-    display:flex;align-items:center;justify-content:center;font-size:35px;
-    background:linear-gradient(145deg,#fff7e7,#e6c88f);
-    box-shadow:0 18px 35px rgba(143,104,53,.16),inset 0 0 0 1px rgba(255,255,255,.75);
-  }
-  .welcome h2{
-    font-family:'Fraunces',serif;font-weight:600;font-size:30px;margin:0 0 9px;
-    background:linear-gradient(100deg,#5f4728,#c09557,#7b5a31);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  .welcome p{color:var(--ink-soft);max-width:490px;margin:0 auto 22px;font-size:14px;line-height:1.65;}
-  .rate-strip{
-    display:flex;gap:9px;max-width:620px;margin:0 auto 14px;
-    justify-content:center;flex-wrap:wrap;
-  }
-  .rate-card{
-    min-width:190px;flex:1;text-align:left;padding:12px 14px;
-    border:1px solid var(--line);border-radius:16px;
-    background:rgba(255,255,255,.82);box-shadow:0 8px 25px rgba(74,55,28,.06);
-    cursor:pointer;transition:all .18s ease;
-  }
-  .rate-card:hover{transform:translateY(-2px);border-color:var(--gold-light);box-shadow:0 12px 30px rgba(74,55,28,.10);}
-  .rate-top{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--ink-soft);}
-  .rate-name{font-weight:700;color:var(--ink);font-size:13px;}
-  .rate-value{font-family:'Fraunces',serif;font-size:20px;font-weight:600;margin-top:5px;}
-  .rate-meta{font-size:10px;color:var(--ink-soft);margin-top:3px;}
-  .rate-loading{font-size:12px;color:var(--ink-soft);padding-top:7px;}
-  .chips{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:650px;margin:0 auto;}
-  .chip{
-    border:1px solid var(--line);background:rgba(255,255,255,.86);border-radius:15px;
-    padding:12px 12px;font-size:12.5px;font-weight:650;color:var(--ink);
-    cursor:pointer;text-align:left;transition:all .18s ease;
-  }
-  .chip:hover{border-color:var(--gold);background:var(--gold-mist);transform:translateY(-1px);box-shadow:0 7px 18px rgba(74,55,28,.07);}
-  .chip span{display:block;font-size:17px;margin-bottom:5px;}
+    * { box-sizing: border-box; }
 
-  .msg-row{display:flex;gap:10px;align-items:flex-end;animation:msgIn .24s ease;}
-  @keyframes msgIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-  .msg-row.user{flex-direction:row-reverse;}
-  .avatar{
-    width:30px;height:30px;border-radius:10px;flex:none;
-    background:linear-gradient(145deg,#f6e8cb,#c39a5b);
-    display:flex;align-items:center;justify-content:center;font-size:14px;
-    box-shadow:0 5px 14px rgba(143,104,53,.14);
-  }
-  .bubble{
-    max-width:80%;padding:12px 15px;border-radius:18px;font-size:14px;
-    line-height:1.62;word-wrap:break-word;box-shadow:0 4px 16px rgba(74,55,28,.045);
-  }
-  .msg-row.assistant .bubble{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:5px;}
-  .msg-row.user .bubble{
-    background:linear-gradient(145deg,#caa66e,#8f6835);color:#fff;
-    border-bottom-right-radius:5px;box-shadow:0 8px 20px rgba(143,104,53,.18);
-  }
-  .bubble p{margin:0 0 8px}.bubble p:last-child{margin-bottom:0}
-  .bubble ul,.bubble ol{margin:6px 0;padding-left:20px}.bubble li{margin:3px 0}
-  .bubble strong{font-weight:750}.bubble table{border-collapse:collapse;margin:8px 0;font-size:13px;width:100%}
-  .bubble th,.bubble td{border:1px solid var(--line);padding:6px 8px;text-align:left}
-  .bubble code{background:var(--gold-mist);padding:1px 5px;border-radius:5px;font-size:12.5px}
-  .msg-actions{display:flex;gap:5px;margin-top:6px;padding-left:40px}
-  .msg-row.user .msg-actions{padding-left:0;padding-right:40px;justify-content:flex-end}
-  .text-btn{border:none;background:none;color:var(--ink-soft);font-size:11.5px;cursor:pointer;padding:3px 7px;border-radius:7px}
-  .text-btn:hover{color:var(--gold-deep);background:var(--gold-mist)}
-  .thinking{display:flex;gap:9px;align-items:center}
-  .thinking .label{font-size:12.5px;color:var(--ink-soft)}
-  .typing-dots{display:flex;gap:3px}.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:bounce 1.2s infinite ease-in-out}
-  .typing-dots span:nth-child(2){animation-delay:.15s}.typing-dots span:nth-child(3){animation-delay:.3s}
-  @keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.45}40%{transform:translateY(-4px);opacity:1}}
-  .error-banner{background:#fbeDE9;border:1px solid #e3b7a8;color:var(--danger);padding:10px 14px;border-radius:12px;font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .error-banner button{border:1px solid var(--danger);background:none;color:var(--danger);border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer}
+    html, body, #root {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
 
-  /* Composer */
-  footer.composer{padding:10px 18px 15px;border-top:1px solid var(--line);background:rgba(255,252,247,.88);backdrop-filter:blur(18px)}
-  .composer-inner{
-    display:flex;align-items:flex-end;gap:8px;background:var(--surface);
-    border:1px solid var(--line);border-radius:20px;padding:8px 8px 8px 16px;
-    box-shadow:0 8px 30px rgba(74,55,28,.07);
-  }
-  .composer-inner:focus-within{border-color:var(--gold);box-shadow:0 8px 30px rgba(143,104,53,.10)}
-  textarea{flex:1;border:none;outline:none;resize:none;font-family:inherit;font-size:14px;line-height:1.5;max-height:120px;background:transparent;color:var(--ink);padding:6px 0}
-  textarea::placeholder{color:#9a917e}
-  .send-btn{
-    width:40px;height:40px;border-radius:13px;border:none;flex:none;
-    background:linear-gradient(145deg,#b88b4b,#805a2e);color:#fff;
-    display:flex;align-items:center;justify-content:center;cursor:pointer;
-    transition:all .18s ease;box-shadow:0 6px 16px rgba(128,90,46,.20);
-  }
-  .send-btn:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 9px 20px rgba(128,90,46,.28)}
-  .send-btn:disabled{opacity:.35;cursor:not-allowed}
-  .send-btn:not(:disabled):active{transform:scale(.92)}
+    body {
+      font-family: "DM Sans", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 10%, #f2e6d1 0, transparent 30%),
+        radial-gradient(circle at 90% 90%, #f4eadb 0, transparent 28%),
+        var(--bg);
+    }
 
-  /* Modal */
-  .modal-backdrop{position:fixed;inset:0;background:rgba(42,36,28,.48);display:flex;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(4px)}
-  @media (min-width:640px){.modal-backdrop{align-items:center}}
-  .modal{background:var(--surface);width:100%;max-width:430px;border-radius:22px 22px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom,0px));max-height:88vh;overflow-y:auto;box-shadow:0 25px 70px rgba(40,29,15,.22)}
-  @media (min-width:640px){.modal{border-radius:22px}}
-  .modal h3{font-family:'Fraunces',serif;font-weight:600;font-size:20px;margin:0 0 5px}
-  .modal .sub{font-size:12.5px;color:var(--ink-soft);margin:0 0 16px}
-  .field{margin-bottom:12px}.field label{display:block;font-size:12.5px;font-weight:650;margin-bottom:5px;color:var(--ink-soft)}
-  .field input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:11px;font-family:inherit;font-size:14px;background:var(--ivory);color:var(--ink)}
-  .field input:focus{outline:none;border-color:var(--gold)}
-  .modal-actions{display:flex;gap:8px;margin-top:16px}
-  .btn-primary{flex:1;background:linear-gradient(145deg,#b88b4b,#805a2e);color:#fff;border:none;border-radius:11px;padding:11px;font-weight:700;font-size:14px;cursor:pointer}
-  .btn-secondary{background:none;border:1px solid var(--line);color:var(--ink);border-radius:11px;padding:11px 16px;font-weight:600;font-size:14px;cursor:pointer}
-  .calc-result{margin-top:16px;background:var(--gold-mist);border-radius:13px;padding:14px;font-size:13.5px}
-  .calc-result .row{display:flex;justify-content:space-between;padding:3px 0}.calc-result .row.total{font-weight:700;border-top:1px solid rgba(140,106,58,.25);margin-top:6px;padding-top:8px}
-  .calc-result .note{margin-top:8px;color:var(--ink-soft);font-size:11.5px;line-height:1.5}
-  ::-webkit-scrollbar{width:7px}::-webkit-scrollbar-thumb{background:#d9ccb7;border-radius:8px}
-  @media (max-width:700px){.app{max-width:none}.chips{grid-template-columns:repeat(2,1fr)}}
-  @media (max-width:520px){
-    header.top{padding:11px 13px}.brand-text p{display:none}.status{padding:6px 8px}
-    main.chat{padding:20px 12px 10px}.welcome h2{font-size:26px}.welcome .glyph{width:64px;height:64px}
-    .rate-card{min-width:155px}.rate-value{font-size:18px}.chips{gap:8px}.chip{padding:10px;font-size:11.5px}
-    .bubble{max-width:87%;font-size:13.5px}.composer{padding-left:10px!important;padding-right:10px!important}
-  }
-  @media (prefers-reduced-motion:reduce){.status .dot,.typing-dots span,.msg-row,.welcome{animation:none}}
+    button, input, textarea { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
 
-</style>
+    .app {
+      height: 100%;
+      max-width: 1000px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      background: rgba(255,253,249,.88);
+      box-shadow: 0 0 70px rgba(69,48,20,.06);
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 24px;
+      background: rgba(255,253,249,.94);
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+
+    .brand-icon {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      font-size: 24px;
+      background: linear-gradient(145deg, #f8ebd2, #d2ad70);
+      box-shadow: 0 5px 16px #b58a4b25;
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      font: 600 25px "Playfair Display", serif;
+      margin: 0;
+      letter-spacing: -.4px;
+    }
+
+    .brand p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .header-right { display: flex; align-items: center; gap: 9px; }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .status-dot.off { background: var(--red); }
+
+    .icon-button {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+      width: 39px;
+      height: 39px;
+      border-radius: 13px;
+      cursor: pointer;
+    }
+
+    .icon-button:hover { border-color: var(--gold); }
+
+    .rate-area {
+      padding: 15px 24px 0;
+      flex-shrink: 0;
+    }
+
+    .rate-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .rate-heading strong { font-size: 12px; letter-spacing: .5px; }
+    .rate-heading span { color: var(--muted); font-size: 11px; }
+
+    .rates {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .rate-card {
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding: 13px 16px;
+      background: white;
+      box-shadow: 0 4px 15px #4b32100a;
+      min-width: 0;
+    }
+
+    .rate-label { color: var(--muted); font-size: 12px; }
+
+    .rate-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .metal-icon {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      background: var(--gold-pale);
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    .rate-value {
+      font: 600 22px "Playfair Display", serif;
+      overflow-wrap: anywhere;
+    }
+
+    .rate-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .rate-error { color: var(--muted); font-size: 12px; margin-top: 5px; }
+
+    .chat {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 17px;
+      scroll-behavior: smooth;
+    }
+
+    .welcome {
+      margin: auto 0;
+      text-align: center;
+      padding: 20px 8px;
+    }
+
+    .welcome-symbol {
+      width: 76px;
+      height: 76px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 17px;
+      font-size: 36px;
+      border-radius: 25px;
+      background: linear-gradient(145deg, #fff6e4, #ead0a0);
+      box-shadow: 0 10px 30px #8b65251b;
+    }
+
+    .welcome h2 {
+      font: 600 clamp(27px, 4vw, 36px) "Playfair Display", serif;
+      margin: 0 0 10px;
+      background: linear-gradient(100deg, #634825, #bd9252, #76552c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .welcome p {
+      max-width: 480px;
+      margin: 0 auto 22px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .suggestions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .suggestion {
+      text-align: left;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 15px;
+      padding: 13px;
+      cursor: pointer;
+      color: var(--ink);
+      transition: .2s ease;
+      min-height: 84px;
+    }
+
+    .suggestion:hover {
+      border-color: var(--gold);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .suggestion-icon { display: block; font-size: 21px; margin-bottom: 7px; }
+    .suggestion strong { font-size: 12px; display: block; }
+    .suggestion small { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
+
+    .message-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      animation: appear .22s ease;
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message-row.user { justify-content: flex-end; }
+
+    .avatar {
+      width: 35px;
+      height: 35px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--gold-pale);
+    }
+
+    .message-content { max-width: min(78%, 650px); min-width: 0; }
+
+    .bubble {
+      padding: 13px 16px;
+      border: 1px solid var(--line);
+      border-radius: 5px 17px 17px 17px;
+      background: white;
+      line-height: 1.7;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .user .bubble {
+      color: white;
+      background: #84623a;
+      border-color: #84623a;
+      border-radius: 17px 5px 17px 17px;
+    }
+
+    .bubble p { margin: 0 0 9px; }
+    .bubble p:last-child { margin-bottom: 0; }
+    .bubble ul, .bubble ol { padding-left: 22px; }
+    .bubble a { color: var(--gold-dark); }
+    .bubble table { display: block; overflow-x: auto; border-collapse: collapse; }
+    .bubble th, .bubble td { padding: 6px 9px; border: 1px solid var(--line); }
+    .bubble th { background: var(--gold-pale); }
+
+    .message-actions {
+      display: flex;
+      gap: 12px;
+      padding: 5px 0 0 3px;
+    }
+
+    .text-button {
+      background: none;
+      border: 0;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 3px;
+      font-size: 11px;
+    }
+
+    .text-button:hover { color: var(--gold-dark); }
+
+    .typing {
+      display: flex;
+      gap: 5px;
+      padding: 6px 0;
+    }
+
+    .typing span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: bounce 1s infinite ease-in-out;
+    }
+
+    .typing span:nth-child(2) { animation-delay: .15s; }
+    .typing span:nth-child(3) { animation-delay: .3s; }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: .5; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    .error-note {
+      color: var(--red);
+      background: #fff1ed;
+      border: 1px solid #f2d5ce;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .composer-area {
+      padding: 12px 24px 17px;
+      background: rgba(255,253,249,.97);
+      border-top: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+
+    .composer {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      border: 1px solid #ded1bd;
+      border-radius: 18px;
+      padding: 8px 9px 8px 15px;
+      background: white;
+      box-shadow: 0 5px 20px #5b42100a;
+    }
+
+    .composer:focus-within {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px #b58a4b17;
+    }
+
+    .composer textarea {
+      flex: 1;
+      width: 100%;
+      min-width: 0;
+      resize: none;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--ink);
+      padding: 8px 0;
+      max-height: 120px;
+      min-height: 40px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .composer textarea::placeholder { color: #a59b8d; }
+
+    .send-button {
+      flex-shrink: 0;
+      width: 43px;
+      height: 43px;
+      border: 0;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #c8a36a, #98713c);
+      color: white;
+      font-size: 19px;
+      cursor: pointer;
+    }
+
+    .send-button:disabled { opacity: .5; cursor: not-allowed; }
+
+    .composer-tools {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 3px 0;
+      gap: 8px;
+    }
+
+    .tool-buttons { display: flex; gap: 7px; flex-wrap: wrap; }
+
+    .tool-chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: white;
+      color: var(--muted);
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .tool-chip:hover { border-color: var(--gold); color: var(--gold-dark); }
+    .disclaimer { color: #a09688; font-size: 10px; text-align: right; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: #21190fc0;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 420px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 23px;
+      box-shadow: 0 25px 80px #0003;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .modal h3 { font: 600 24px "Playfair Display", serif; margin: 0; }
+    .close-button { border: 0; background: transparent; font-size: 24px; cursor: pointer; }
+
+    .field { margin-bottom: 14px; }
+    .field label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+
+    .field input, .field select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+      outline: none;
+    }
+
+    .field input:focus, .field select:focus { border-color: var(--gold); }
+
+    .calculate-button {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      padding: 13px;
+      background: #84623a;
+      color: white;
+      cursor: pointer;
+    }
+
+    .calc-result {
+      margin-top: 15px;
+      padding: 14px;
+      border-radius: 14px;
+      background: var(--gold-pale);
+      line-height: 1.7;
+      font-size: 13px;
+    }
+
+    @media (max-width: 650px) {
+      .topbar { padding: 12px 14px; }
+      .brand-icon { width: 40px; height: 40px; border-radius: 13px; }
+      .brand h1 { font-size: 22px; }
+      .brand p { font-size: 10px; }
+      .status { font-size: 0; gap: 0; }
+      .status-dot { width: 9px; height: 9px; }
+      .header-right { gap: 7px; }
+      .icon-button { width: 36px; height: 36px; }
+      .rate-area { padding: 12px 14px 0; }
+      .rate-card { padding: 11px; }
+      .rate-value { font-size: 19px; }
+      .chat { padding: 17px 14px; }
+      .suggestions { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+      .suggestion { padding: 11px; min-height: 78px; }
+      .message-content { max-width: 86%; }
+      .bubble { font-size: 13px; padding: 11px 13px; }
+      .composer-area { padding: 10px 12px 12px; }
+      .composer-tools { align-items: flex-start; }
+      .disclaimer { max-width: 110px; line-height: 1.4; }
+    }
+
+    @media (max-width: 360px) {
+      .brand { gap: 8px; }
+      .brand h1 { font-size: 19px; }
+      .rates { gap: 7px; }
+      .rate-value { font-size: 16px; }
+      .tool-chip { padding: 6px 8px; }
+    }
+  </style>
 </head>
+
 <body>
-<div id="root"></div>
+  <div id="root"></div>
 
-<script type="text/babel" data-presets="react">
-const { useState, useRef, useEffect, useCallback } = React;
+  <script type="text/babel" data-presets="react">
+    const { useState, useEffect, useRef, useCallback } = React;
 
-const SUGGESTIONS = [
-  { icon: "💰", label: "Gold Rate", query: "What's the gold price today?" },
-  { icon: "🔘", label: "Silver Rate", query: "What is the silver rate today?" },
-  { icon: "💎", label: "Diamond Guide", query: "What should I know about the diamond 4Cs before buying?" },
-  { icon: "⭐", label: "Latest Trends", query: "What jewellery design trends are popular right now?" },
-  { icon: "💍", label: "Jewellery Ideas", query: "Suggest a necklace for a wedding." },
-  { icon: "🛍️", label: "Buying Guide", query: "What is BIS Hallmark and how do I check if gold jewellery is genuine?" },
-];
+    const SUGGESTIONS = [
+      { icon: "🪙", title: "Gold Rate", detail: "Check today's gold price", query: "What is today's gold rate? Explain 22K and 24K prices." },
+      { icon: "🥈", title: "Silver Rate", detail: "Know the silver price", query: "What is today's silver rate?" },
+      { icon: "💎", title: "Diamond Guide", detail: "Understand the 4Cs", query: "Explain the 4Cs of diamonds before buying jewellery." },
+      { icon: "✨", title: "Latest Trends", detail: "Explore jewellery styles", query: "What jewellery design trends are popular right now?" },
+      { icon: "💍", title: "Wedding Jewellery", detail: "Find your perfect look", query: "Suggest jewellery for a traditional Indian wedding." },
+      { icon: "🛍️", title: "Buying Guide", detail: "Buy with confidence", query: "How do I check BIS hallmarking and HUID on gold jewellery?" }
+    ];
 
-function renderMarkdown(text) {
-  const raw = marked.parse(text, { breaks: true });
-  return { __html: DOMPurify.sanitize(raw) };
-}
+    function safeMarkdown(text) {
+      const raw = window.marked
+        ? marked.parse(String(text || ""), { breaks: true })
+        : String(text || "").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+      return {
+        __html: window.DOMPurify
+          ? DOMPurify.sanitize(raw)
+          : raw
+      };
+    }
 
-function Avatar() {
-  return <div className="avatar">✨</div>;
-}
+    function formatINR(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return "—";
+      return "₹" + number.toLocaleString("en-IN", {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2
+      });
+    }
 
-function Message({ msg, onCopy, onRetry, isLastAssistant }) {
-  const isUser = msg.role === "user";
-  return (
-    <div>
-      <div className={"msg-row " + (isUser ? "user" : "assistant")}>
-        {!isUser && <Avatar />}
-        <div className="bubble">
-          {isUser ? msg.content : <div dangerouslySetInnerHTML={renderMarkdown(msg.content)} />}
-        </div>
-      </div>
-      {!isUser && (
-        <div className="msg-actions">
-          <button className="text-btn" onClick={() => onCopy(msg.content)}>Copy</button>
-          {isLastAssistant && <button className="text-btn" onClick={onRetry}>Retry</button>}
-        </div>
-      )}
-    </div>
-  );
-}
+    function getRateValue(data) {
+      if (!data || typeof data !== "object") return null;
+      return data.sell ?? data.rate ?? data.price ?? data.buy ?? null;
+    }
 
-function CalculatorModal({ onClose }) {
-  const [weight, setWeight] = useState("");
-  const [rate, setRate] = useState("");
-  const [liveRate, setLiveRate] = useState(null);
-  const [rateLoading, setRateLoading] = useState(false);
-  const [making, setMaking] = useState("10");
-  const [gst, setGst] = useState("3");
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+    function App() {
+      const [messages, setMessages] = useState([]);
+      const [input, setInput] = useState("");
+      const [loading, setLoading] = useState(false);
+      const [online, setOnline] = useState(false);
+      const [error, setError] = useState("");
+      const [rates, setRates] = useState({
+        gold: null,
+        silver: null,
+        updated: null,
+        loading: true
+      });
+      const [showCalc, setShowCalc] = useState(false);
+      const [weight, setWeight] = useState("10");
+      const [goldRate, setGoldRate] = useState("");
+      const [purity, setPurity] = useState("22");
+      const [makingCharge, setMakingCharge] = useState("10");
+      const [calcResult, setCalcResult] = useState(null);
 
-  const loadLiveGoldRate = async () => {
-    setRateLoading(true);
-    setError("");
-    try {
-      const res = await fetch("/api/gold-rate");
-      const data = await res.json();
-      if (!res.ok || !data.available) {
-        throw new Error(data.error || "Live gold rate is unavailable right now.");
+      const chatRef = useRef(null);
+      const inputRef = useRef(null);
+      const lastQuestionRef = useRef("");
+
+      const loadRates = useCallback(async () => {
+        setRates(previous => ({ ...previous, loading: true }));
+
+        try {
+          const [goldResponse, silverResponse] = await Promise.all([
+            fetch("/api/gold-rate"),
+            fetch("/api/silver-rate")
+          ]);
+
+          const goldData = await goldResponse.json();
+          const silverData = await silverResponse.json();
+
+          setRates({
+            gold: goldData && goldData.available !== false ? goldData : null,
+            silver: silverData && silverData.available !== false ? silverData : null,
+            updated: goldData?.updated_at || silverData?.updated_at || null,
+            loading: false
+          });
+
+          const currentGoldRate = getRateValue(goldData);
+          if (currentGoldRate && !goldRate) {
+            setGoldRate(String(currentGoldRate));
+          }
+        } catch (err) {
+          setRates(previous => ({ ...previous, loading: false }));
+        }
+      }, [goldRate]);
+
+      useEffect(() => {
+        fetch("/api/health")
+          .then(response => {
+            if (!response.ok) throw new Error("Backend unavailable");
+            return response.json();
+          })
+          .then(data => setOnline(!!data.gemini_configured))
+          .catch(() => setOnline(false));
+
+        loadRates();
+      }, [loadRates]);
+
+      useEffect(() => {
+        if (chatRef.current) {
+          chatRef.current.scrollTop = chatRef.current.scrollHeight;
+        }
+      }, [messages, loading]);
+
+      async function sendMessage(text = input) {
+        const question = String(text || "").trim();
+        if (!question || loading) return;
+
+        lastQuestionRef.current = question;
+        setError("");
+        setInput("");
+
+        const userMessage = { role: "user", content: question };
+        setMessages(previous => [...previous, userMessage]);
+        setLoading(true);
+
+        try {
+          const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: question })
+          });
+
+          let data = {};
+          try {
+            data = await response.json();
+          } catch (_) {
+            data = {};
+          }
+
+          if (!response.ok) {
+            throw new Error(data.error || data.message || `Request failed (${response.status})`);
+          }
+
+          const answer =
+            data.reply ??
+            data.response ??
+            data.answer ??
+            data.message ??
+            "I received your message, but the backend returned an empty reply.";
+
+          setMessages(previous => [
+            ...previous,
+            { role: "assistant", content: String(answer) }
+          ]);
+        } catch (err) {
+          setError(
+            "I couldn't connect to the chat service. Please check that your Flask backend is running and /api/chat is available. " +
+            (err.message || "")
+          );
+        } finally {
+          setLoading(false);
+          setTimeout(() => inputRef.current?.focus(), 50);
+        }
       }
-      const per10g = Number(data.sell_rate_per_gram) * 10;
-      setRate(per10g.toFixed(2));
-      setLiveRate({ ...data, rate_per_10g: per10g });
-    } catch (e) {
-      setError(e.message || "Couldn't load the live gold rate.");
-    } finally {
-      setRateLoading(false);
-    }
-  };
 
-  React.useEffect(() => {
-    loadLiveGoldRate();
-  }, []);
-
-  const compute = async () => {
-    setError(""); setResult(null);
-    setLoading(true);
-    try {
-      const res = await fetch("/api/calculate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          weight_g: weight,
-          rate_per_10g: rate,
-          making_charge_percent: making,
-          gst_percent: gst,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) { setError(data.error || "Something went wrong."); return; }
-      setResult(data);
-    } catch (e) {
-      setError("Couldn't reach the server. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h3>Jewellery Price Estimator</h3>
-        <p className="sub">A rough estimate only — enter your local rate and jeweller's charges.</p>
-
-        <div className="field">
-          <label>Weight (grams)</label>
-          <input type="number" inputMode="decimal" placeholder="e.g. 10" value={weight} onChange={e => setWeight(e.target.value)} />
-        </div>
-        <div className="field">
-          <label>Gold rate (₹ per 10g)</label>
-          <div style={{display:"flex", gap:"8px"}}>
-            <input style={{flex:1}} type="number" inputMode="decimal" placeholder="e.g. 150000" value={rate} onChange={e => { setRate(e.target.value); setLiveRate(null); }} />
-            <button type="button" className="btn-secondary" onClick={loadLiveGoldRate} disabled={rateLoading}>
-              {rateLoading ? "Loading…" : "Use Live"}
-            </button>
-          </div>
-          {liveRate && <div style={{marginTop:"6px",fontSize:"11px",color:"var(--ink-soft)"}}>
-            Live sell rate: ₹{Number(liveRate.sell_rate_per_gram).toLocaleString("en-IN", {maximumFractionDigits:2})}/g · {liveRate.source}
-          </div>}
-        </div>
-        <div className="field">
-          <label>Making charges (%)</label>
-          <input type="number" inputMode="decimal" value={making} onChange={e => setMaking(e.target.value)} />
-        </div>
-        <div className="field">
-          <label>GST (%)</label>
-          <input type="number" inputMode="decimal" value={gst} onChange={e => setGst(e.target.value)} />
-        </div>
-
-        {error && <div className="error-banner"><span>{error}</span></div>}
-
-        {result && (
-          <div className="calc-result">
-            <div className="row"><span>Metal value</span><span>₹{result.metal_value.toLocaleString("en-IN")}</span></div>
-            <div className="row"><span>Making charge</span><span>₹{result.making_charge.toLocaleString("en-IN")}</span></div>
-            <div className="row"><span>GST</span><span>₹{result.gst.toLocaleString("en-IN")}</span></div>
-            <div className="row total"><span>Estimated total</span><span>₹{result.total_estimate.toLocaleString("en-IN")}</span></div>
-            <p className="note">{result.note}</p>
-          </div>
-        )}
-
-        <div className="modal-actions">
-          <button className="btn-secondary" onClick={onClose}>Close</button>
-          <button className="btn-primary" onClick={compute} disabled={loading}>
-            {loading ? "Calculating…" : "Calculate"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function App() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [online, setOnline] = useState(true);
-  const [showCalc, setShowCalc] = useState(false);
-  const [rates, setRates] = useState({ gold: null, silver: null, updated: null, loading: true });
-  const scrollRef = useRef(null);
-  const textareaRef = useRef(null);
-
-  const loadRates = useCallback(async () => {
-    setRates(r => ({ ...r, loading: true }));
-    try {
-      const [goldRes, silverRes] = await Promise.all([
-        fetch("/api/gold-rate"),
-        fetch("/api/silver-rate")
-      ]);
-      const gold = await goldRes.json();
-      const silver = await silverRes.json();
-      setRates({
-        gold: gold.available ? gold : null,
-        silver: silver.available ? silver : null,
-        updated: gold.updated_at || silver.updated_at || null,
-        loading: false
-      });
-    } catch (e) {
-      setRates(r => ({ ...r, loading: false }));
-    }
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/health").then(r => r.json()).then(d => setOnline(!!d.gemini_configured)).catch(() => setOnline(false));
-    loadRates();
-    const timer = setInterval(loadRates, 5 * 60 * 1000);
-    return () => clearInterval(timer);
-  }, [loadRates]);
-
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [messages, loading]);
-
-  const autoGrow = () => {
-    const el = textareaRef.current;
-    if (!el) return;
-    el.style.height = "auto";
-    el.style.height = Math.min(el.scrollHeight, 120) + "px";
-  };
-
-  const sendMessage = useCallback(async (overrideText) => {
-    const text = (overrideText !== undefined ? overrideText : input).trim();
-    if (!text || loading) return;
-
-    const nextMessages = [...messages, { role: "user", content: text }];
-    setMessages(nextMessages);
-    setInput("");
-    setError("");
-    setLoading(true);
-    requestAnimationFrame(autoGrow);
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: nextMessages }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Something went wrong.");
-      } else {
-        setMessages(m => [...m, { role: "assistant", content: data.reply }]);
+      async function retryLast() {
+        if (!lastQuestionRef.current || loading) return;
+        setMessages(previous => {
+          const copy = [...previous];
+          if (copy[copy.length - 1]?.role === "assistant") copy.pop();
+          return copy;
+        });
+        await sendMessage(lastQuestionRef.current);
       }
-    } catch (e) {
-      setError("I'm having trouble connecting right now. Please try again in a moment.");
-    } finally {
-      setLoading(false);
-    }
-  }, [input, loading, messages]);
 
-  const retryLast = () => {
-    const lastUser = [...messages].reverse().find(m => m.role === "user");
-    if (!lastUser) return;
-    const trimmed = messages.slice(0, messages.length - (messages[messages.length - 1].role === "assistant" ? 1 : 0));
-    setMessages(trimmed.slice(0, trimmed.length - 1));
-    sendMessage(lastUser.content);
-  };
+      async function copyText(text) {
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch (_) {
+          const area = document.createElement("textarea");
+          area.value = text;
+          document.body.appendChild(area);
+          area.select();
+          document.execCommand("copy");
+          area.remove();
+        }
+      }
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
+      function handleKeyDown(event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          sendMessage();
+        }
+      }
 
-  const copyText = (text) => {
-    navigator.clipboard && navigator.clipboard.writeText(text);
-  };
+      function calculatePrice() {
+        const grams = Number(weight);
+        const rate = Number(goldRate);
+        const making = Number(makingCharge);
+        const purityFactor = Number(purity) / 24;
 
-  const lastAssistantIndex = (() => {
-    for (let i = messages.length - 1; i >= 0; i--) if (messages[i].role === "assistant") return i;
-    return -1;
-  })();
+        if (!(grams > 0) || !(rate > 0) || !(making >= 0)) {
+          setCalcResult({ error: "Please enter a valid weight, gold rate and making charge." });
+          return;
+        }
 
-  return (
-    <div className="app">
-      <header className="top">
-        <div className="brand">
-          <div className="brand-mark" aria-label="JewellAI jewellery logo"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img"><circle cx="32" cy="32" r="23" fill="none" stroke="#fff8e9" stroke-width="2.4"/><path d="M19 25.5c3.8-5.8 11-8.8 18.1-7.1 6.5 1.5 10.9 7.2 10.9 13.8 0 7.7-6.2 14-14 14-6.4 0-11.9-4.2-13.6-10.1" fill="none" stroke="#fff8e9" stroke-width="2.7" stroke-linecap="round"/><path d="M22 22l10-7 10 7-10 6z" fill="#fff8e9"/><path d="M27 36.5h10" stroke="#fff8e9" stroke-width="2.4" stroke-linecap="round"/></svg></div>
-          <div className="brand-text">
-            <h1>JewellAI</h1>
-            <p>Your Smart Jewellery Assistant · Live rates</p>
-          </div>
-        </div>
-        <div className="header-actions">
-          <div className="status">
-            <span className={"dot" + (online ? "" : " off")}></span>
-            {online ? "AI Online" : "Offline"}
-          </div>
-          <button className="icon-btn" title="Price estimator" onClick={() => setShowCalc(true)}>🧮</button>
-          <button className="icon-btn" title="New chat" onClick={() => { setMessages([]); setError(""); }}>✚</button>
-        </div>
-      </header>
+        const metalValue = grams * rate * purityFactor;
+        const makingValue = metalValue * making / 100;
+        const beforeGST = metalValue + makingValue;
+        const gst = beforeGST * 0.03;
+        const total = beforeGST + gst;
 
-      <main className="chat" ref={scrollRef}>
-        {messages.length === 0 ? (
-          <div className="welcome">
-            <div className="glyph">✨</div>
-            <h2>Welcome to JewellAI</h2>
-            <p>Ask me anything about gold, silver, diamonds, jewellery trends, designs, pricing and more.</p>
+        setCalcResult({
+          metalValue,
+          makingValue,
+          gst,
+          total
+        });
+      }
 
-            <div className="rate-strip">
-              <div className="rate-card" onClick={() => sendMessage("What is the current gold rate?")}>
-                <div className="rate-top">
-                  <span className="rate-name">🪙 Gold</span>
-                  <span>LIVE</span>
-                </div>
-                {rates.loading ? (
-                  <div className="rate-loading">Fetching live rate…</div>
-                ) : rates.gold ? (
-                  <>
-                    <div className="rate-value">₹{Number(rates.gold.buy_rate_per_gram).toLocaleString("en-IN", {maximumFractionDigits:2})}<small style={{fontSize:"11px",fontFamily:"Manrope",color:"var(--ink-soft)"}}>/g</small></div>
-                    <div className="rate-meta">Buy rate · {rates.gold.source}</div>
-                  </>
-                ) : <div className="rate-loading">Rate unavailable</div>}
-              </div>
+      function clearChat() {
+        setMessages([]);
+        setError("");
+        lastQuestionRef.current = "";
+      }
 
-              <div className="rate-card" onClick={() => sendMessage("What is the current silver rate?")}>
-                <div className="rate-top">
-                  <span className="rate-name">🔘Silver</span>
-                  <span>LIVE</span>
-                </div>
-                {rates.loading ? (
-                  <div className="rate-loading">Fetching live rate…</div>
-                ) : rates.silver ? (
-                  <>
-                    <div className="rate-value">₹{Number(rates.silver.buy_rate_per_gram).toLocaleString("en-IN", {maximumFractionDigits:2})}<small style={{fontSize:"11px",fontFamily:"Manrope",color:"var(--ink-soft)"}}>/g</small></div>
-                    <div className="rate-meta">Buy rate · {rates.silver.source}</div>
-                  </>
-                ) : <div className="rate-loading">Rate unavailable</div>}
+      const goldRateValue = getRateValue(rates.gold);
+      const silverRateValue = getRateValue(rates.silver);
+
+      return (
+        <div className="app">
+          <header className="topbar">
+            <div className="brand">
+              <div className="brand-icon">👑</div>
+              <div>
+                <h1>JewellAI</h1>
+                <p>Your Smart Jewellery Assistant</p>
               </div>
             </div>
 
-            <div style={{textAlign:"center",margin:"-4px 0 14px",fontSize:"10.5px",color:"var(--ink-soft)"}}>
-              {rates.updated ? `Updated ${new Date(rates.updated).toLocaleString("en-IN", {dateStyle:"medium", timeStyle:"short"})}` : "Live rates update automatically"}
-              <button className="text-btn" onClick={loadRates} style={{marginLeft:"4px"}}>↻ Refresh</button>
+            <div className="header-right">
+              <div className="status" title={online ? "Chat service connected" : "Chat service unavailable"}>
+                <span className={"status-dot " + (!online ? "off" : "")}></span>
+                {online ? "Assistant online" : "Connecting"}
+              </div>
+              <button
+                className="icon-button"
+                title="Clear conversation"
+                aria-label="Clear conversation"
+                onClick={clearChat}
+              >↻</button>
+            </div>
+          </header>
+
+          <section className="rate-area">
+            <div className="rate-heading">
+              <strong>MARKET SNAPSHOT</strong>
+              <span>
+                {rates.loading
+                  ? "Updating rates…"
+                  : rates.updated
+                    ? "Updated " + new Date(rates.updated).toLocaleString("en-IN", {
+                        dateStyle: "medium",
+                        timeStyle: "short"
+                      })
+                    : "Live rate feed"}
+              </span>
             </div>
 
-            <div className="chips">
-              {SUGGESTIONS.map(s => (
-                <button key={s.label} className="chip" onClick={() => sendMessage(s.query)}>
-                  <span>{s.icon}</span>{s.label}
-                </button>
-              ))}
+            <div className="rates">
+              <div className="rate-card">
+                <div className="rate-title">
+                  <span className="metal-icon">🪙</span>
+                  Gold
+                </div>
+                <div className="rate-value">
+                  {rates.loading ? "Loading…" : goldRateValue != null ? formatINR(goldRateValue) : "Unavailable"}
+                </div>
+                <div className="rate-sub">Price as returned by your rate provider</div>
+              </div>
+
+              <div className="rate-card">
+                <div className="rate-title">
+                  <span className="metal-icon">🥈</span>
+                  Silver
+                </div>
+                <div className="rate-value">
+                  {rates.loading ? "Loading…" : silverRateValue != null ? formatINR(silverRateValue) : "Unavailable"}
+                </div>
+                <div className="rate-sub">Price as returned by your rate provider</div>
+              </div>
             </div>
-          </div>
-        ) : (
-          messages.map((m, i) => (
-            <Message
-              key={i}
-              msg={m}
-              onCopy={copyText}
-              onRetry={retryLast}
-              isLastAssistant={i === lastAssistantIndex}
-            />
-          ))
-        )}
+          </section>
 
-        {loading && (
-          <div className="msg-row assistant">
-            <Avatar />
-            <div className="bubble thinking">
-              <span className="label">JewellAI is thinking</span>
-              <span className="typing-dots"><span></span><span></span><span></span></span>
+          <main className="chat" ref={chatRef}>
+            {messages.length === 0 ? (
+              <section className="welcome">
+                <div className="welcome-symbol">💍</div>
+                <h2>Your jewellery journey starts here.</h2>
+                <p>
+                  Discover gold and silver rates, learn how to buy jewellery confidently,
+                  explore trends and get personalised jewellery guidance.
+                </p>
+
+                <div className="suggestions">
+                  {SUGGESTIONS.map(item => (
+                    <button
+                      className="suggestion"
+                      key={item.title}
+                      onClick={() => sendMessage(item.query)}
+                    >
+                      <span className="suggestion-icon">{item.icon}</span>
+                      <strong>{item.title}</strong>
+                      <small>{item.detail}</small>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ) : (
+              messages.map((message, index) => (
+                <div className={"message-row " + (message.role === "user" ? "user" : "assistant")} key={index}>
+                  {message.role !== "user" && <div className="avatar">✨</div>}
+                  <div className="message-content">
+                    <div className="bubble">
+                      {message.role === "user"
+                        ? message.content
+                        : <div dangerouslySetInnerHTML={safeMarkdown(message.content)} />}
+                    </div>
+                    {message.role === "assistant" && (
+                      <div className="message-actions">
+                        <button className="text-button" onClick={() => copyText(message.content)}>Copy</button>
+                        {index === messages.length - 1 && (
+                          <button className="text-button" onClick={retryLast}>Retry</button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+
+            {loading && (
+              <div className="message-row assistant">
+                <div className="avatar">✨</div>
+                <div className="bubble">
+                  <div className="typing" aria-label="JewellAI is typing">
+                    <span></span><span></span><span></span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {error && <div className="error-note">{error}</div>}
+          </main>
+
+          <footer className="composer-area">
+            <div className="composer">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={event => setInput(event.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask anything about jewellery…"
+                rows="1"
+                aria-label="Message JewellAI"
+              />
+              <button
+                className="send-button"
+                onClick={() => sendMessage()}
+                disabled={!input.trim() || loading}
+                aria-label="Send message"
+                title="Send message"
+              >➤</button>
             </div>
-          </div>
-        )}
 
-        {error && (
-          <div className="error-banner">
-            <span>{error}</span>
-            <button onClick={retryLast}>Retry</button>
-          </div>
-        )}
-      </main>
+            <div className="composer-tools">
+              <div className="tool-buttons">
+                <button className="tool-chip" onClick={() => setShowCalc(true)}>🧮 Price calculator</button>
+                <button className="tool-chip" onClick={loadRates}>↻ Refresh rates</button>
+              </div>
+              <span className="disclaimer">Prices may vary by jeweller and location.</span>
+            </div>
+          </footer>
 
-      <footer className="composer">
-        <div className="composer-inner">
-          <textarea
-            ref={textareaRef}
-            rows={1}
-            placeholder="Ask JewellAI about gold, diamonds, jewellery trends…"
-            value={input}
-            onChange={(e) => { setInput(e.target.value); autoGrow(); }}
-            onKeyDown={handleKeyDown}
-          />
-          <button className="send-btn" disabled={!input.trim() || loading} onClick={() => sendMessage()}>
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-              <path d="M4 12L20 4L14 20L11 13L4 12Z" fill="currentColor"/>
-            </svg>
-          </button>
+          {showCalc && (
+            <div className="modal-backdrop" onClick={event => {
+              if (event.target === event.currentTarget) setShowCalc(false);
+            }}>
+              <section className="modal" role="dialog" aria-modal="true" aria-label="Jewellery price calculator">
+                <div className="modal-header">
+                  <h3>Gold Price Calculator</h3>
+                  <button className="close-button" onClick={() => setShowCalc(false)} aria-label="Close calculator">×</button>
+                </div>
+
+                <div className="field">
+                  <label>Gold weight (grams)</label>
+                  <input type="number" min="0" step="0.01" value={weight}
+                    onChange={event => setWeight(event.target.value)} />
+                </div>
+
+                <div className="field">
+                  <label>Gold rate per gram (24K, ₹)</label>
+                  <input type="number" min="0" step="0.01" value={goldRate}
+                    onChange={event => setGoldRate(event.target.value)}
+                    placeholder="Enter rate per gram" />
+                </div>
+
+                <div className="field">
+                  <label>Gold purity</label>
+                  <select value={purity} onChange={event => setPurity(event.target.value)}>
+                    <option value="24">24K — 99.9%</option>
+                    <option value="22">22K — 91.6%</option>
+                    <option value="18">18K — 75%</option>
+                    <option value="14">14K — 58.5%</option>
+                  </select>
+                </div>
+
+                <div className="field">
+                  <label>Making charge (%)</label>
+                  <input type="number" min="0" step="0.5" value={makingCharge}
+                    onChange={event => setMakingCharge(event.target.value)} />
+                </div>
+
+                <button className="calculate-button" onClick={calculatePrice}>Calculate estimate</button>
+
+                {calcResult && (
+                  <div className="calc-result">
+                    {calcResult.error ? (
+                      calcResult.error
+                    ) : (
+                      <>
+                        <div>Gold value: <strong>{formatINR(calcResult.metalValue)}</strong></div>
+                        <div>Making charges: <strong>{formatINR(calcResult.makingValue)}</strong></div>
+                        <div>Estimated GST (3%): <strong>{formatINR(calcResult.gst)}</strong></div>
+                        <hr />
+                        <div>Estimated total: <strong>{formatINR(calcResult.total)}</strong></div>
+                        <small>This is an estimate. Stone charges, wastage and jeweller-specific fees may be extra.</small>
+                      </>
+                    )}
+                  </div>
+                )}
+              </section>
+            </div>
+          )}
         </div>
-      </footer>
+      );
+    }
 
-      {showCalc && <CalculatorModal onClose={() => setShowCalc(false)} />}
-    </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-</script>
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
 </body>
 </html>
